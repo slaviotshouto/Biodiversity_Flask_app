@@ -36,7 +36,7 @@ def upload():
             shutil.make_archive(zip_name, 'zip', temp_folder)
 
             # Send over to the model
-            url = 'https://d476-92-247-118-91.eu.ngrok.io/analyze_hook'
+            url = 'https://35.180.31.51/analyze_hook'
             with open(os.getcwd() + "\\" + zip_name + ".zip", 'rb') as zip_file:
                 req = requests.post(url, files={'file': zip_file.read()})
                 results = req.json()
