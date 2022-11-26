@@ -1,4 +1,4 @@
-from flask import render_template, request, send_from_directory
+from flask import render_template, request, send_from_directory, redirect
 from app.flask_app import app
 import os
 import shutil
@@ -27,7 +27,8 @@ def upload():
             images = request.files.getlist('images')
             temp_folder = os.path.join(os.getcwd(), 'app', 'temp')
             for image in images:
-                image.save(os.path.join(temp_folder, image.filename))
+                if image.filename.endswith('.jpg'):
+                    image.save(os.path.join(temp_folder, image.filename))
 
             curr_time = datetime.datetime.now()
             timestamp = curr_time.timestamp()
@@ -35,19 +36,26 @@ def upload():
 
             shutil.make_archive(zip_name, 'zip', temp_folder)
 
-            # Send over to the model
-            url = 'http://35.180.31.51:8000/analyze_hook'
-            with open(os.path.join(os.getcwd(), zip_name + ".zip"), 'rb') as zip_file:
-                req = requests.post(url, files={'file': zip_file.read()})
-                results = req.json()
-                print(results)
-                write_to_csv(results)
+            # clean up temp folder
             for file in os.listdir(temp_folder):
                 os.remove(os.path.join(temp_folder, file))
 
+            # Send over to the model
+            url = 'http://35.180.98.32:8000/analyze_hook'
+            redirect_flag = True
+            with open(os.path.join(os.getcwd(), zip_name + ".zip"), 'rb') as zip_file:
+                req = requests.post(url, files={'file': zip_file.read()})
+                results = req.json()
+                if results:
+                    write_to_csv(results)
+                    redirect_flag = False
+
             os.remove(os.path.join(os.getcwd(), zip_name + ".zip"))
+            if redirect_flag:
+                return redirect(request.url)
 
             return send_from_directory(directory=os.getcwd(), path='biodiversity_analysis.csv', as_attachment=True)
+
     return render_template('upload.html')
 
 
