@@ -25,9 +25,9 @@ def upload():
 
             # Set as an attribute in the html
             images = request.files.getlist('images')
-            temp_folder = os.getcwd() + '\\app\\temp\\'
+            temp_folder = os.path.join(os.getcwd(), 'app', 'temp')
             for image in images:
-                image.save(temp_folder + image.filename)
+                image.save(os.path.join(temp_folder, image.filename))
 
             curr_time = datetime.datetime.now()
             timestamp = curr_time.timestamp()
