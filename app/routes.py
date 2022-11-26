@@ -45,7 +45,7 @@ def upload():
             for file in os.listdir(temp_folder):
                 os.remove(os.path.join(temp_folder, file))
 
-            os.remove(os.getcwd() + "\\" + zip_name + ".zip")
+            os.remove(os.path.join(os.getcwd(), zip_name + ".zip"))
 
             return send_from_directory(directory=os.getcwd(), path='results.csv', as_attachment=True)
     return render_template('upload.html')
