@@ -36,7 +36,7 @@ def upload():
             shutil.make_archive(zip_name, 'zip', temp_folder)
 
             # Send over to the model
-            url = 'https://35.180.31.51:8000/analyze_hook'
+            url = 'http://35.180.31.51:8000/analyze_hook'
             with open(os.path.join(os.getcwd(), zip_name + ".zip"), 'rb') as zip_file:
                 req = requests.post(url, files={'file': zip_file.read()})
                 results = req.json()
@@ -47,7 +47,7 @@ def upload():
 
             os.remove(os.path.join(os.getcwd(), zip_name + ".zip"))
 
-            return send_from_directory(directory=os.getcwd(), path='results.csv', as_attachment=True)
+            return send_from_directory(directory=os.getcwd(), path='biodiversity_analysis.csv', as_attachment=True)
     return render_template('upload.html')
 
 
